@@ -95,7 +95,7 @@ function up() {
 ## Usage: colEcho string [ "red" | "green" | "blue" | "yellow" (default: "red") ]
 ### Example colEcho "this is some text" "blue"
 function colEcho() {
-  [ $# -eq 0 ] && echo "colEcho(): at least one argument is required" && return 1
+  [ $# -eq 0 ] && echo "$FUNCNAME: at least one argument is required" && return 1
 
   local escSeq="\x1b["
   local colReset=$escSeq"39;49;00m"
@@ -126,7 +126,7 @@ function colEcho() {
 ### Example: s sometext (= s sometext .)
 ### Example: s sometext /some/folder
 function s() {
-  [ $# -eq 0 ] && echo "s(): at least one argument is required" && return 1
+  [ $# -eq 0 ] && echo "$FUNCNAME: at least one argument is required" && return 1
 
   grep -n1ir "$1" "${2:-.}"
 }
@@ -135,7 +135,7 @@ function s() {
 ### Example: S SomeText (= S sometext .)
 ### Example: S SomeText /some/folder
 function S() {
-  [ $# -eq 0 ] && echo "S(): at least one argument is required" && return 1
+  [ $# -eq 0 ] && echo "$FUNCNAME: at least one argument is required" && return 1
 
   grep -n1r "$1" "${2:-.}"
 }
@@ -143,7 +143,7 @@ function S() {
 ## Usage: sfile file
 ### Example sfile 'file.csv'
 function sfile { 
-  [ $# -ne 1 ] && echo "sfile(): one argument is required" && return 1
+  [ $# -ne 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   find . -name '.snapshot' -prune ! -readable -prune -o -iname "$1" 2>/dev/null
 }
@@ -151,7 +151,7 @@ function sfile {
 ## Usage: sps pattern
 ### Example sps postgres
 function sps {
-  [ $# -ne 1 ] && echo "sps(): one argument is required" && return 1
+  [ $# -ne 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   pgrep "$@" | xargs ps -o uid,pid,ppid,stime,time,%cpu,%mem,sz,uname,ruser,comm,args
 }
@@ -159,7 +159,7 @@ function sps {
 ## Usage: sfps pattern
 ### Example sfps postgres
 function sfps {
-  [ $# -ne 1 ] && echo "sfps(): one argument is required" && return 1
+  [ $# -ne 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   ps -ef | grep "$1" | grep -v 'grep'
 }
@@ -167,7 +167,7 @@ function sfps {
 ## sman manPage pattern
 ### sman cp recursive
 function sman {
-  [ $# -ne 2 ] && echo "sman(): two arguments are required" && return 1  
+  [ $# -ne 2 ] && echo "$FUNCNAME: two arguments are required" && return 1  
 
   man "$1" | grep -n5i "$2"
 }
@@ -175,7 +175,7 @@ function sman {
 ## Usage: dl /some/folder N (default: 10)
 ### Example: dl /var 20
 function dl {
-  [ $# -eq 0 ] && echo "dl(): at least one argument is required" && return 1
+  [ $# -eq 0 ] && echo "$FUNCNAME: at least one argument is required" && return 1
 
   du -a "$1" | sort -rh | head -n "${2:-10}"
 }
@@ -183,7 +183,7 @@ function dl {
 ## Usage: spdf pattern
 ### Example: spdf "some text"
 function spdf {
-  [ $# -ne 1 ] && echo "spdf(): one argument is required" && return 1
+  [ $# -ne 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   find ./ ! -readable -prune -o -iname '*.pdf' -exec pdfgrep -H "$1" {} + 2>/dev/null
 }
@@ -202,7 +202,7 @@ function rmspaces() {
   local dir="$1"
 
   if [ "$dir" = "/" ] ; then
-    echo "rmspaces(): cannot replace spaces from / onwards" && return 1
+    echo "$FUNCNAME: cannot replace spaces from / onwards" && return 1
   else
     find "${dir:-.}" -depth -name '* *' -execdir bash -c \
     'for i; do mv "$i" "${i// /_}"; done' _ "{}" +
@@ -216,7 +216,7 @@ function rmheaders() {
   local start_at=$((1+${1:-1}))
 
   if [ "$dir" = "/" ] ; then
-    echo "rmheaders(): cannot remove headers from / onwards" && return 1
+    echo "$FUNCNAME: cannot remove headers from / onwards" && return 1
   else
     find "${dir:-.}" -depth -type f ! -name '.*' -execdir bash -c \
     'for i; do t=tmp.$$$(date +%s%N); tail -n+$0 "$i" > $t; mv -f $t "$i"; done' $start_at "{}" +
@@ -226,14 +226,14 @@ function rmheaders() {
 ## Usage: rmpheaders pattern [ linesToSkip (default: 1) }]
 ### Example: rmpheaders '*.csv' (= rmpatheaders '*.csv' 1)
 function rmpheaders() {
-  [ $# -eq 0 ] && echo "rmpheaders(): at least one argument is required" && return 1
+  [ $# -eq 0 ] && echo "$FUNCNAME: at least one argument is required" && return 1
 
   local dir=`pwd`
   local pat="$1"
   local start_at=$((1+${2:-1}))
 
   if [ "$dir" = "/" ] ; then
-    echo "rmpatheaders(): cannot remove headers from / onwards" && return 1
+    echo "$FUNCNAME: cannot remove headers from / onwards" && return 1
   else
     find "${dir:-.}" -depth -type f -name "$pat" -execdir bash -c \
     'for i; do t=tmp.$$$(date +%s%N); tail -n+$0 "$i" > $t; mv -f $t "$i"; done' $start_at "{}" +
@@ -244,7 +244,7 @@ function rmpheaders() {
 ### Example: transferFiles txt left cp (= transferFiles txt left cp $HOME/)
 ### Example: transferFiles txt left mv $HOME/some_folder/
 function transferFiles() {
-  [ $# -le 3 ] && echo "transferFiles(): at least three arguments are required" && return 1
+  [ $# -le 3 ] && echo "$FUNCNAME: at least three arguments are required" && return 1
 
   local ext='*.'"$1"
   local pat="$2"
@@ -258,7 +258,7 @@ function transferFiles() {
   local dest="${4:-$HOME}"
 
   if [[ "$oper" != "mv" && "$oper" != "cp" ]]; then
-    echo "transferFiles(): only cp and mv are supported" && return 1
+    echo "$FUNCNAME: only cp and mv are supported" && return 1
   fi
   
   find . -type f -name "$ext" -path "$pat" | xargs -I '{}' "$oper" '{}' "$dest"
@@ -277,7 +277,7 @@ function bulkCopy() {
   if [ "$sourceFolder" != "/" ]; then
     sourceFolder="${sourceFolder%/}/*"
   else
-    echo "bulkCopy(): cannot copy everything from /" && return 1
+    echo "$FUNCNAME: cannot copy everything from /" && return 1
   fi
 
   set +f
@@ -300,9 +300,9 @@ function bulkCopy() {
 function swap() {
     local temp_file=tmp.$$$(date +%s%N) # alternative: append PID with $$
 
-    [ $# -ne 2 ] && echo "swap(): two arguments are required" && return 1
-    [ ! -e "$1" ] && echo "swap(): $1 does not exist" && return 1
-    [ ! -e "$2" ] && echo "swap(): $2 does not exist" && return 1
+    [ $# -ne 2 ] && echo "$FUNCNAME: two arguments are required" && return 1
+    [ ! -e "$FUNCNAME: $1 does not exist" && return 1
+    [ ! -e "$FUNCNAME: $2 does not exist" && return 1
 
     mv "$1" $temp_file
     mv "$2" "$1"
@@ -312,7 +312,7 @@ function swap() {
 ## Usage: extract fileToExtract
 ### Example: extract file.zip
 function extract () {
-  [ $# -ne 1 ] && echo "extract(): one argument is required" && return 1
+  [ $# -ne 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   if [ -f "$1" ] ; then
       case "$1" in
@@ -337,7 +337,7 @@ function extract () {
 ### Example: encodeURL www.google.com/some-link
 encodeURL() {
   # -lt: spaces 'look like' multiple arguments when arguments are unquoted
-  [ $# -lt 1 ] && echo "encodeURL(): one argument is required" && return 1
+  [ $# -lt 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   # str takes care of 'multiple arguments' by assuming they are one big string
   local str="$@"
@@ -358,7 +358,7 @@ encodeURL() {
 ## Usage: capbib bibtexFile.bib
 ### Example: capbib references.bib
 function capbib {
-  [ $# -ne 1 ] && echo "capbib(): one argument is required" && return 1
+  [ $# -ne 1 ] && echo "$FUNCNAME: one argument is required" && return 1
 
   sed '/^@/!s/[A-Z]/{&}/g' "$1" > "${1%.bib}_caps.bib"
 }
