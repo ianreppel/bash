@@ -1,69 +1,3 @@
-# -------------------------------------------------------------------------------------------------
-# Custom shell options
-# -------------------------------------------------------------------------------------------------
-shopt -q -s cdspell        # correct small typos when issuing cd
-shopt -q -s extglob        # allow regular expressions in file expansions
-shopt -q -s globstar       # treat **-pattern differently than *
-shopt -q -s nocaseglob     # ignore case in wildcard file expansions
-#--------------------------------------------------------------------------------------------------
-# Aliases
-# -------------------------------------------------------------------------------------------------
-alias dev='cd $HOME/development'
-alias doc='cd $HOME/documents'
-alias down='cd $HOME/downloads'
-alias script='cd $HOME/scripts'
-# -------------------------------------------------------------------------------------------------
-# Aliases for the 'ls' family
-# -------------------------------------------------------------------------------------------------
-alias ls='ls -h --color'
-alias ll='ls -lv --group-directories-first'
-
-alias lx='ls -lXB'         # sort by extension
-alias lk='ls -lSr'         # sort by size (ascending)
-alias lt='ls -ltr'         # sort by date (ascending)
-alias lc='ls -ltcr'        # sort by modification/change time (ascending)
-alias lu='ls -ltur'        # sort by access time (ascending)
-alias lp='ll | less'       # pipe through 'less'
-alias lr='ll -R'           # recursive ls
-alias la='ll -A'           # show hidden files
-
-alias tree='tree -Csuh'    # Alternative to lr
-alias treep='tree | less'  # Pipe through 'less'
-# -------------------------------------------------------------------------------------------------
-# Generic aliases
-# -------------------------------------------------------------------------------------------------
-alias ncat='cat -sn'                 # cat with line numbers
-alias more='less'                    # always use less
-alias grep='grep --color=always'     # grep with colours
-
-alias du='du -kh'                    # make output readable
-alias df='df -kTh'                   # make output readable
-
-alias path='echo -e ${PATH//:/\\n}'  # print PATH in readable form
-
-alias netstat='netstat -ano'         # all sockets with numeric addresses
-alias vmstat='vmstat -w'             # wide-format vmstat
-# -------------------------------------------------------------------------------------------------
-# Aliases for Git: could also go in .gitconfig [alias] section
-# -------------------------------------------------------------------------------------------------
-alias gs='git status'
-alias gl='git log'
-alias ga='git add -A'
-alias gc='git commit -e'
-alias gco='git checkout'
-alias gb='gco -b'
-alias gg='gl --grep='
-alias gls='gl --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate'
-alias glg='gl --pretty=format:"%h %s" --graph'
-alias gll='gls --numstat'
-# -------------------------------------------------------------------------------------------------
-# Aliases for clipboard (requires: xclip)
-# -------------------------------------------------------------------------------------------------
-alias cc='xclip -sel clip'    # cat file.txt | cc ('Ctrl+C')
-alias cv='xclip -o -sel clip' # cv > file.txt ('Ctrl+V')
-# -------------------------------------------------------------------------------------------------
-# Generic functions
-# -------------------------------------------------------------------------------------------------
 # Change directory and list contents immediately (unless there are more than 50 files/folders)
 ## Fancy replacement for built-in cd
 ### Example: c next_folder
@@ -83,11 +17,11 @@ function c() {
 ## Usage: up [ number (default: 1) ]
 ### Example: up 4
 function up() {
-    local arg=${1:-1}
+    local arg="${1:-1}"
     local dir=""
     while [ $arg -gt 0 ]; do
         dir="../$dir"
-        arg=$(($arg - 1));
+        arg="$(($arg - 1))";
     done
     c $dir #>&/dev/null
 }
@@ -212,7 +146,7 @@ function rmspaces() {
 ## Usage: rmheaders [ linesToSkip (default: 1) }]
 ### Example: rmheaders (= rmheaders 1)
 function rmheaders() {
-  local dir=`pwd`
+  local dir="$(pwd)"
   local start_at=$((1+${1:-1}))
 
   if [ "$dir" = "/" ] ; then
@@ -228,7 +162,7 @@ function rmheaders() {
 function rmpheaders() {
   [ $# -eq 0 ] && echo "$FUNCNAME: at least one argument is required" && return 1
 
-  local dir=`pwd`
+  local dir="$(pwd)"
   local pat="$1"
   local start_at=$((1+${2:-1}))
 
