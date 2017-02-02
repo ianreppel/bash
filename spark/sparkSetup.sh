@@ -36,7 +36,6 @@ scalaVersion := \"$SCALA_VERSION\"
 organization := \"$ORGANIZATION\"
 
 val sparkVersion = \"$SPARK_VERSION\"
-val hbaseVersion = \"$HBASE_VERSION\"
 val suffix = \"provided\"
 val test = \"test\"
 
