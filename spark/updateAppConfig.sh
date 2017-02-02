@@ -2,8 +2,7 @@
 # Databaseline code repository
 # 
 # Code for post: Setting up Scala for Spark App Development
-# Compatibility: N/A
-# Base URL:      http://databaseline.wordpress.com
+# Base URL:      https://databaseline.bitbucket.io
 # Author:        Ian Hellström
 # -------------------------------------------------------------------------------------------------
 # Global definitions 
@@ -12,14 +11,14 @@ FUNCTIONS="$(realpath ../functions.sh)"
 if [ -r "$FUNCTIONS" ]; then
   source "$FUNCTIONS"
 else
-  echo "Cannot load functions file." && return 1
+  echo "Cannot load functions file." && exit 1
 fi
 
 CFG_FILE="$(basename app.cfg)"
 if [ -r "$CFG_FILE" ]; then
   source "$CFG_FILE"
 else
-  echo "Cannot load configuration file." && return 2
+  echo "Cannot load configuration file." && exit 2
 fi
 # -------------------------------------------------------------------------------------------------
 # Internal configuration: VERSION prefix|groupId|ArtifactId
@@ -29,9 +28,6 @@ MAVEN_URL="http://search.maven.org/solrsearch/select?"
 MAVEN_CONFIG=("SCALATEST|org.scalatest|scalatest_" \
               "SPARK|org.apache.spark|spark-core_" \
               "HADOOP|org.apache.hadoop|hadoop-client" \
-              "HADOOP_CORE|org.apache.hadoop|hadoop-core" \
-              "SCALDING|com.twitter|scalding-core_" \
-              "LOGGING|com.typesafe.scala-logging|scala-logging_"
               "SBT_SCOVERAGE|org.scoverage|sbt-scoverage" \
               "SBT_STATS|com.orrsella|sbt-stats")
 # -------------------------------------------------------------------------------------------------
