@@ -18,6 +18,7 @@ alias treep='tree | less'  # Pipe through 'less'
 # -------------------------------------------------------------------------------------------------
 # Generic aliases
 # -------------------------------------------------------------------------------------------------
+alias vi='vim'                       # always use vim
 alias ncat='cat -sn'                 # cat with line numbers
 alias more='less'                    # always use less
 alias grep='grep --color=always'     # grep with colours
@@ -42,6 +43,8 @@ alias gg='gl --grep='
 alias gls='gl --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate'
 alias glg='gl --pretty=format:"%h %s" --graph'
 alias gll='gls --numstat'
+alias gd='git diff'
+alias gdc='gd --cached'
 # -------------------------------------------------------------------------------------------------
 # Aliases for clipboard (requires: xclip)
 # -------------------------------------------------------------------------------------------------
