@@ -139,7 +139,7 @@ function analyseHiveTable() {
     fi
   fi
 
-  local cols="$(__hive_columns $table $exlude)"
+  local cols="$(__hive_columns $table $exclude)"
 
   # Replace each column with a MIN, MAX, COUNT-DISTINCT, and COUNT-NULL inside MAP (needed for unpivoting)
   pattern=' *\([[:alnum:]\_]*\) *,*'
