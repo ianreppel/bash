@@ -180,21 +180,50 @@ function hclear() {
 # -----------------------------------------------------------------------------
 # Show list of most recent YARN applications
 # -----------------------------------------------------------------------------
-# Usage:   ylist [ numApps [ appTypes [ appStates ]]]
-# Example: ylist (= ylist 10 SPARK ALL)
-# Example: ylist 50 MAPREDUCE (= ylist 50 MAPREDUCE ALL)
-# Example: ylist 50 SPARK KILLED
+# Usage:   ylist [ numApps [ appStates [ appTypes ]]]
+# Example: ylist (= ylist 10)
+# Example: ylist 50 KILLED SPARK,MAPREDUCE
 function ylist() {
   local num="${1:-10}"
-  local apps="${2:-SPARK}"
-  local states="${3:-ALL}"
+  local states="${2:-ALL}"
 
-  yarn application -list \
-    -appTypes "${apps^^}" \
-    -appStates "${states^^}" \
-    | sort \
-    | tail -n "$num"
+  local apps=""
+  if [[ "$3" != "" ]]; then
+    apps="-appTypes ${3^^}"
+  fi
+
+  local cmd="yarn application -list $apps -appStates ${states^^}"
+  eval "$cmd | \grep '^application_' | sort | tail -n$num"
 }
+# -----------------------------------------------------------------------------
+# Show list of most recent completed (incl. failed/killed) YARN applications
+# -----------------------------------------------------------------------------
+# Usage:   ydone [ numApps (default: 10) ]
+# Example: ydone (= ylast 10)
+# Example: ydone 50 SPARK
+function ydone() {
+  ylist "${1:-10}" "FINISHED,FAILED,KILLED" "$2"
+}
+# -----------------------------------------------------------------------------
+# Show logs of last completed (incl. failed/killed) YARN application
+# -----------------------------------------------------------------------------
+# Usage:   ylast [ appTypes ]
+# Example: ylast
+# Example: ylast SPARK
+function ylast() {
+  ydone "1" "$1" | \
+    awk '{ system("yarn logs -applicationId " $1) }'
+}
+# -----------------------------------------------------------------------------
+# Show list of most recent running YARN applications
+# -----------------------------------------------------------------------------
+# Usage:   ycurr [ numApps (default: 10) ]
+# Example: ycurr (= ycurr 10)
+# Example: ycurr 50 SPARK
+function ycurr() {
+  ylist 1 "$1" "RUNNING" "$2" | awk '{ system("ylog " $1) }'
+}
+
 # -----------------------------------------------------------------------------
 # Show log for specific YARN application ID
 # -----------------------------------------------------------------------------
