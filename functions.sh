@@ -331,6 +331,12 @@ encodeURL() {
 # Example: join "," "${arr[@]}"
 function join() { local d="$1"; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
 # -------------------------------------------------------------------------------------------------
+# Check whether a website is up or not
+# -------------------------------------------------------------------------------------------------
+# Usage:   isup url
+# Example: isup www.google.com
+function isup() { lynx --dump www.isup.me/"$1" | head -n1 }
+# -------------------------------------------------------------------------------------------------
 # Force-capitalize bibliography (BibTeX) files
 # -------------------------------------------------------------------------------------------------
 # Usage:   capbib bibtexFile.bib
