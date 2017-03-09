@@ -153,6 +153,99 @@ function gr() {
   git rebase -i HEAD~${1:-2}
 }
 # -------------------------------------------------------------------------------------------------
+# Synchronize a branch from the upstream repository
+# -------------------------------------------------------------------------------------------------
+function __git_sync() {
+  git checkout "$1" && git pull
+}
+# -------------------------------------------------------------------------------------------------
+# Branch off another branch that has been synchronized from the upstream repository
+# -------------------------------------------------------------------------------------------------
+function __git_sync_branch {
+  __git_sync "$1" && git checkout -b "$2"
+}
+# -------------------------------------------------------------------------------------------------
+# Synchronize from the upstream repository, merge a branch, and push
+# -------------------------------------------------------------------------------------------------
+function __git_sync_merge {
+  __git_sync "$1" && git merge "$2" && git push
+}
+# -------------------------------------------------------------------------------------------------
+# Synchronize from the upstream repository, merge a branch, push, and prune topic branch
+# -------------------------------------------------------------------------------------------------
+function __git_sync_merge_prune {
+  __git_sync_merge "$1" "$2" && git branch -d "$2"
+}
+# -------------------------------------------------------------------------------------------------
+# Create a new feature branch
+# -------------------------------------------------------------------------------------------------
+# Usage:   gbf featureDesc [ devBranch (default: $GIT_DEVELOP_BRANCH) ]
+# Example: gbf ISSUE-123 (= gcf ISSUE-123 $GIT_DEVELOP_BRANCH)
+# Example: gbf ISSUE-999 dev
+function gbf() {
+  __git_sync_branch "${2:-$GIT_DEVELOP_BRANCH}" "${GIT_FEATURE_PREFIX}$1"
+}
+# -------------------------------------------------------------------------------------------------
+# Create a new hotfix branch
+# -------------------------------------------------------------------------------------------------
+# Usage:   gbh hotfixDesc [ masterBranch (default: $GIT_MASTER_BRANCH) ]
+# Example: gbh ISSUE-123 (= gcf ISSUE-123 $GIT_MASTER_BRANCH)
+# Example: gbh ISSUE-999 main
+function gbh() {
+  __git_sync_branch "${2:-$GIT_MASTER_BRANCH}" "${GIT_HOTFIX_PREFIX}$1"
+}
+# -------------------------------------------------------------------------------------------------
+# Create a new release branch
+# -------------------------------------------------------------------------------------------------
+# Usage:   gbr releaseDesc [ devBranch (default: $GIT_DEVELOP_BRANCH) ]
+# Example: gbr 1.0.5 (= gcf 1.0.5 $GIT_DEVELOP_BRANCH)
+# Example: gbr 2.6 dev
+function gbr() { 
+  __git_sync_branch "${2:-$GIT_DEVELOP_BRANCH}" "${GIT_RELEASE_PREFIX}$1"
+}
+# -------------------------------------------------------------------------------------------------
+# Merge the current topic branch into development (and master for hotfixes and releases)
+# -------------------------------------------------------------------------------------------------
+# Usage:   gm [ branch (default: current) 
+#               [ masterBranch (default: $GIT_MASTER_BRANCH) 
+#                 [ devBranch (default: $GIT_DEVELOP_BRANCH) ] ] ]
+# Example: gm (= gm current $GIT_MASTER_BRANCH $GIT_DEVELOP_BRANCH)
+# Example: gm ISSUE-123 (= gm ISSUE-123 $GIT_MASTER_BRANCH $GIT_DEVELOP_BRANCH)
+# Example: gm ISSUE-999 main dev
+# Note:    The function will ask for a tag when merging a release branch
+function gm() {
+  local current="$(git rev-parse --abbrev-ref HEAD)"
+  local branch="${1:-$current}"
+  local master="${2:-$GIT_MASTER_BRANCH}"
+  local devel="${3:-$GIT_DEVELOP_BRANCH}"
+
+
+  case "$branch" in 
+    "$GIT_FEATURE_PREFIX"?*) 
+      colEcho "$FUNCNAME: Merging $branch into $devel..."
+      __git_sync_merge_prune "$devel" "$branch"
+      ;;
+    "$GIT_HOTFIX_PREFIX"?*) 
+      colEcho "$FUNCNAME: Merging $branch into $master..."
+      __git_sync_merge_prune "$master" "$branch"
+      colEcho "$FUNCNAME: Merging $master back into $devel..."
+      __git_sync_merge "$devel" "$master"
+      ;;
+    "$GIT_RELEASE_PREFIX"?*) 
+      colEcho "$FUNCNAME: Merging $branch into $master..."
+      __git_sync_merge "$master" "$branch"
+      colEcho "$FUNCNAME: Please provide a version label: " "blue"
+      read version
+      git tag -a "$version" && git push origin --tags
+      colEcho "$FUNCNAME: Merging $master back into $devel..."
+      __git_sync_merge "$devel" "$master"
+       ;;
+    *) 
+       echo "$FUNCNAME: $branch is not a topic branch" && return 1
+       ;;
+  esac
+}
+# -------------------------------------------------------------------------------------------------
 # Recursively replace spaces with underscores in file and folder names
 # -------------------------------------------------------------------------------------------------
 # Usage:   rmspaces [ folder (default: .) ]

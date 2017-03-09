@@ -45,8 +45,17 @@ alias glg='gl --pretty=format:"%h %s" --graph'
 alias gll='gls --numstat'
 alias gd='git diff'
 alias gdc='gd --cached'
+alias discard='git reset --hard'
 # -------------------------------------------------------------------------------------------------
 # Aliases for clipboard (requires: xclip)
 # -------------------------------------------------------------------------------------------------
 alias cc='xclip -sel clip'    # cat file.txt | cc ('Ctrl+C')
 alias cv='xclip -o -sel clip' # cv > file.txt ('Ctrl+V')
+# -------------------------------------------------------------------------------------------------
+# Variables for Git
+# -------------------------------------------------------------------------------------------------
+GIT_MASTER_BRANCH="master"
+GIT_DEVELOP_BRANCH="develop"
+GIT_FEATURE_PREFIX="feature/"
+GIT_HOTFIX_PREFIX="hotfix/"
+GIT_RELEASE_PREFIX="release/"
