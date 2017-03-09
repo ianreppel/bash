@@ -201,7 +201,7 @@ function ylist() {
 # Usage:   ymon [ numApps [ appStates [ appTypes ]]]
 # Example: ymon (= ymon 10)
 # Example: ymon 5 RUNNING SPARK,MAPREDUCE
-function ymon() { while sleep 30; do echo "$(date)"; ylist $@; done }
+function ymon() { while sleep 30; do echo "$(date)"; ylist $@; done; }
 # -----------------------------------------------------------------------------
 # Show list of most recent completed (incl. failed/killed) YARN applications
 # -----------------------------------------------------------------------------

@@ -219,7 +219,6 @@ function gm() {
   local master="${2:-$GIT_MASTER_BRANCH}"
   local devel="${3:-$GIT_DEVELOP_BRANCH}"
 
-
   case "$branch" in 
     "$GIT_FEATURE_PREFIX"?*) 
       colEcho "$FUNCNAME: Merging $branch into $devel..."
@@ -428,7 +427,7 @@ function join() { local d="$1"; shift; echo -n "$1"; shift; printf "%s" "${@/#/$
 # -------------------------------------------------------------------------------------------------
 # Usage:   isup url
 # Example: isup www.google.com
-function isup() { lynx --dump www.isup.me/"$1" | head -n1 }
+function isup() { lynx --dump www.isup.me/"$1" | head -n1; }
 # -------------------------------------------------------------------------------------------------
 # Force-capitalize bibliography (BibTeX) files
 # -------------------------------------------------------------------------------------------------
