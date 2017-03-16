@@ -196,6 +196,13 @@ function ylist() {
   eval "$cmd | \grep '^application_' | sort | tail -n$num"
 }
 # -----------------------------------------------------------------------------
+# Show list of most recent YARN applications roughly every thirty seconds
+# -----------------------------------------------------------------------------
+# Usage:   ymon [ numApps [ appStates [ appTypes ]]]
+# Example: ymon (= ymon 10)
+# Example: ymon 5 RUNNING SPARK,MAPREDUCE
+function ymon() { while sleep 30; do echo "$(date)"; ylist $@; done; }
+# -----------------------------------------------------------------------------
 # Show list of most recent completed (incl. failed/killed) YARN applications
 # -----------------------------------------------------------------------------
 # Usage:   ydone [ numApps (default: 10) ]
