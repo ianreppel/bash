@@ -244,3 +244,18 @@ function yerr() {
 
   yarn logs -applicationId "$1" | grep -n5 ' ERROR '
 }
+
+# -----------------------------------------------------------------------------
+# Cycle through filtered errors from log for specific YARN application ID
+# -----------------------------------------------------------------------------
+# Usage:   yc applicationId [ additionalRegEx (default: 'Caused by| ERROR ')]
+# Example: yc application_1234567890_0042
+# Example: yc application_1234567890_0042 ' FATAL '
+# Note:    press 'n' (next) and 'N' (previous) to cycle through matches
+function yc() {
+  [ $# -lt 1 ] && echo "$FUNCNAME: at least one argument is required" && return 1
+ 
+  local pattern="Caused by| ERROR "
+  if [[ ! -z $2 ]]; then pattern="${pattern}|$2"; fi
+  ylog "$1" | grep -vE "${__IGNORE_ERRORS}" | less -Np "$pattern"
+}
