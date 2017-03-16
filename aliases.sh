@@ -23,6 +23,8 @@ alias ncat='cat -sn'                 # cat with line numbers
 alias more='less'                    # always use less
 alias grep='grep --color=always'     # grep with colours
 
+alias lnk='readlink -f'              # de-reference symlinks
+
 alias du='du -kh'                    # make output readable
 alias df='df -kTh'                   # make output readable
 
