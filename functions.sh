@@ -445,3 +445,19 @@ function capbib {
 function spacetex {
   find ./ -maxdepth 1 -type f -name '*.tex' | xargs sed -i 's/\(\?\|\!\|\.\|\,\)$/\1\ /'
 }
+# -------------------------------------------------------------------------------------------------
+# Count open files and fs/hard/soft limits for $USER
+# -------------------------------------------------------------------------------------------------
+# Usage:   cof
+function cof {
+  local current="$(lsof | wc -l)"
+  local fs=$(cat /proc/sys/fs/file-max 2> /dev/null)
+  local hard=$(ulimit -Hn 2> /dev/null)
+  local soft=$(ulimit -Sn 2> /dev/null)
+
+  echo "Files statistics for $USER:"
+  echo "* Open files:   $current"
+  echo "* FS limit:     $fs"
+  echo "* Hard limit:   $hard"
+  echo "* Soft limit:   $soft"
+}
