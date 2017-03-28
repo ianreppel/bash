@@ -362,8 +362,8 @@ function swap() {
     local temp_file=tmp.$$$(date +%s%N) # alternative: append PID with $$
 
     [ $# -ne 2 ] && echo "$FUNCNAME: two arguments are required" && return 1
-    [ ! -e "$FUNCNAME: $1 does not exist" && return 2
-    [ ! -e "$FUNCNAME: $2 does not exist" && return 3
+    [ ! -e "$1" ] && echo "$FUNCNAME: $1 does not exist" && return 2
+    [ ! -e "$2" ] && echo "$FUNCNAME: $2 does not exist" && return 3
 
     mv "$1" $temp_file
     mv "$2" "$1"
