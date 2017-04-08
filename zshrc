@@ -1,6 +1,6 @@
 export ZSH=/home/ian/.oh-my-zsh
 
-POWERLEVEL9K_MODE="awesome-fontconfig"
+POWERLEVEL9K_MODE="awesome-patched"
 
 ZSH_THEME="powerlevel9k/powerlevel9k"
 
@@ -23,4 +23,6 @@ export BROWSER=/usr/bin/chromium
 export EDITOR=/usr/bin/nano
 export PATH="$PATH:$HOME/scripts:$(ruby -e 'print Gem.user_dir')/bin"
 
-source $HOME/scripts/bash_lib.sh
+unalias -m '*' # disable all zsh plugin aliases
+source $HOME/scripts/aliases.sh
+source $HOME/scripts/functions.sh
