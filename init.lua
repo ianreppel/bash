@@ -1,5 +1,4 @@
 --[[
-
 Custom key bindings defined in this file
 
 Ctrl + Alt + Cmd + ...
@@ -11,7 +10,7 @@ Ctrl + Alt + Cmd + ...
   *) T       open/focus Sublime Text
   *) Ö       layout selector (right pinky, for SWE keyboard)
   *) Left    toggle window left 50%, 65%, 35%
-  *) .       toggle window centred, maximized, chat
+  *) .       toggle window maximized, centred, chat (tiny)
   *) Right   toggle window right 50%, 65%, 35%
   *) Up      toggle window top 50% full/left/right
   *) Down    toggle window bottom 50% full/left/right
@@ -19,7 +18,7 @@ Alt + Tab    switch applications (incl. minimized ones)
 Ctrl + Cmd + ...
   *) Left    move to display on the left
   *) Right   move to display on the right
-Cmd + Shift + ...
+Cmd + Alt + ...
   *) K       display current rack (right middle finger)
   *) P       toggle play/pause
   *) Left    previous track
@@ -35,7 +34,7 @@ Cmd + Shift + ...
 -- Modifier keys
 local hyper = { "Ctrl", "Alt", "Cmd" }
 local move = { "Ctrl", "Cmd "}
-local music = { "Cmd", "Shift"}
+local music = { "Alt", "Cmd"}
 
 -- Screen identifiers
 local macScreen = "Color LCD"
@@ -71,7 +70,7 @@ end
 
 positions = {
   maximized = hs.layout.maximized,
-  centred = {x=0.15, y=0.25, w=0.7, h=0.5},
+  centred = {x=0.15, y=0.15, w=0.7, h=0.7},
 
   left35 = {x=0, y=0, w=0.35, h=1},
   left50 = hs.layout.left50,
@@ -101,62 +100,71 @@ positions = {
 }
 
 ---------------------------------------------------------------------------------------------------
--- Layouts: choose small (large) when display small (large)
+-- Layouts: choose single (multi) when one (more than one) display
 ---------------------------------------------------------------------------------------------------
 
 layouts = {
   {
     name="Development",
-    description="All work and no play makes the piggy bank happy",
-    small={
+    description="IntelliJ, Sublime, Chrome (and Slack)",
+    single={
       {"Google Chrome", nil, macScreen, positions.upper50Left50, nil, nil},
-      {"Sublime Text", nil, largeScreen, positions.lower50Left50, nil, nil},
-      {"IntelliJ IDEA", nil, largeScreen, positions.right50, nil, nil},
+      {"Sublime Text", nil, macScreen, positions.lower50Left50, nil, nil},
+      {"IntelliJ IDEA", nil, macScreen, positions.right50, nil, nil},
     },
-    large={
-      {"Google Chrome", "Email", macScreen, positions.left50, nil, nil},
+    multi={
+      {"Google Chrome", nil, macScreen, positions.left50, nil, nil},
       {"Slack", nil, macScreen, positions.right50, nil, nil},
-      {"Google Chrome", "Google", largeScreen, positions.upper50Left35, nil, nil},
-      {"Sublime Text", nil, largeScreen, positions.lower50Left35, nil, nil},
+      {"Sublime Text", nil, largeScreen, positions.left35, nil, nil},
       {"IntelliJ IDEA", nil, largeScreen, positions.right65, nil, nil},
     }
   },
   {
     name="Focused development",
-    description="No time for notes!",
-    small={
+    description="IntelliJ, Chrome and Slack",
+    single={
       {"Google Chrome", nil, macScreen, positions.upper50Left50, nil, nil},
-      {"Slack",   nil, macScreen, positions.lower50Left50, nil, nil},
-      {"IntelliJ IDEA", nil, largeScreen, positions.right50, nil, nil},
+      {"Slack", nil, macScreen, positions.lower50Left50, nil, nil},
+      {"IntelliJ IDEA", nil, macScreen, positions.right50, nil, nil},
     },
-    large={
-      {"Google Chrome", "Emails", macScreen, positions.left50, nil, nil},
+    multi={
+      {"Google Chrome", nil, macScreen, positions.left50, nil, nil},
       {"Slack",   nil, macScreen, positions.right50, nil, nil},
-      {"Google Chrome", "Google", largeScreen, positions.left35, nil, nil},
-      {"IntelliJ IDEA", nil, largeScreen, positions.right65, nil, nil},
+      {"IntelliJ IDEA", nil, largeScreen, positions.maximized, nil, nil},
     }
   }
 }
 
 currentLayout = null
 
-function applyLayout(layout)
-  local screen = hs.screen.mainScreen()
+function launchApps(arrangement, layout)
+  for _, app in pairs(layout[arrangement]) do
+    hs.application.launchOrFocus(app[1])
+  end
+end
 
-  local layoutSize = layout.small
-  if layout.large and screen:currentMode().w > 1400 then
-    layoutSize = layout.large
+function applyLayout(layout)
+  local screens = #hs.screen.allScreens()
+
+  local arrangement = layout.single
+  if layout.multi and screens > 1 then
+    arrangement = layout.multi
   end
 
   currentLayout = layout
-  hs.layout.apply(layoutSize, function(windowTitle, layoutWindowTitle)
+  hs.layout.apply(arrangement, function(windowTitle, layoutWindowTitle)
     return string.sub(windowTitle, 1, string.len(layoutWindowTitle)) == layoutWindowTitle
   end)
 end
 
 layoutChooser = hs.chooser.new(function(selection)
   if not selection then return end
-
+  
+  local arrangement = "single"
+  if #hs.screen.allScreens() > 1 then
+    arrangement = "multi"
+  end
+  launchApps(arrangement, layouts[selection.index]) 
   applyLayout(layouts[selection.index])
 end)
 i = 0
@@ -185,7 +193,7 @@ end):start()
 
 grid = {
   {mod=hyper, key="Left", units={positions.left50, positions.left65, positions.left35}},
-  {mod=hyper, key=".", units={positions.centred, positions.maximized, positions.chat}},
+  {mod=hyper, key=".", units={positions.maximized, positions.centred, positions.chat}},
   {mod=hyper, key="Right", units={positions.right50, positions.right65, positions.right35}},
   {mod=hyper, key="Up", units={positions.upper50, positions.upper50Left50, positions.upper50Right50, 
     positions.upper50Left35, positions.upper50Right35, positions.upper50Left65, positions.upper50Right65}},
@@ -217,13 +225,13 @@ end)
 -- Custom bindings for screen locking, launching/focussing apps, and controlling Spotify
 ---------------------------------------------------------------------------------------------------
 
-bindKey(hyper, "C", function() hs.application.launchOrFocus("Google Chrome") end)
-bindKey(hyper, "J", function() hs.application.launchOrFocus("Intellij IDEA") end)
-bindKey(hyper, "K", function() hs.hints.windowHints() end)
-bindKey(hyper, "L", function() hs.caffeinate.startScreensaver() end)
-bindKey(hyper, "S", function() hs.application.launchOrFocus("Slack") end)
-bindKey(hyper, "T", function() hs.application.launchOrFocus("Sublime Text") end)
-bindKey(hyper, "Ö", function() layoutChooser:show() end)
+bindKey(hyper, "c", function() hs.application.launchOrFocus("Google Chrome") end)
+bindKey(hyper, "j", function() hs.application.launchOrFocus("IntelliJ IDEA") end)
+bindKey(hyper, "k", function() hs.hints.windowHints() end)
+bindKey(hyper, "l", function() hs.caffeinate.startScreensaver() end)
+bindKey(hyper, "s", function() hs.application.launchOrFocus("Slack") end)
+bindKey(hyper, "t", function() hs.application.launchOrFocus("Sublime Text") end)
+bindKey(hyper, "ö", function() layoutChooser:show() end)
 
 switcher = hs.window.switcher.new(hs.window.filter.new():setCurrentSpace(true):setDefaultFilter{})
 bindKey("Alt", "Tab", function() switcher:next() end)
@@ -231,8 +239,8 @@ bindKey("Alt", "Tab", function() switcher:next() end)
 bindKey(move, "Left", function() hs.window.focusedWindow():moveOneScreenWest() end)
 bindKey(move, "Right", function() hs.window.focusedWindow():moveOneScreenEast() end)
 
-bindKey(music, "K", function() hs.spotify.displayCurrentTrack() end)
-bindKey(music, "P", function() hs.spotify.playpause() end)
+bindKey(music, "k", function() hs.spotify.displayCurrentTrack() end)
+bindKey(music, "p", function() hs.spotify.playpause() end)
 bindKey(music, "Left", function() hs.spotify.previous() end)
 bindKey(music, "Right", function() hs.spotify.next() end)
 bindKey(music, "Up", function() hs.spotify.volumeUp() end)
