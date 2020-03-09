@@ -8,7 +8,7 @@ Ctrl + Alt + Cmd + ...
   *) L       lock screen
   *) S       open/focus Slack
   *) T       open/focus Sublime Text
-  *) Ö       layout selector (right pinky, for SWE keyboard)
+  *) ;       layout selector
   *) Left    toggle window left 50%, 65%, 35%
   *) .       toggle window maximized, centred, chat (tiny)
   *) Right   toggle window right 50%, 65%, 35%
@@ -19,12 +19,18 @@ Ctrl + Cmd + ...
   *) Left    move to display on the left
   *) Right   move to display on the right
 Cmd + Alt + ...
-  *) K       display current rack (right middle finger)
+  *) K       display current track (right middle finger)
   *) P       toggle play/pause
+  *) J       Fast forward (5 sec)
+  *) L       Fast forward (30 sec)
+  *) ;       Skip to middle of song
   *) Left    previous track
   *) right   next track
   *) Up      volume up
   *) Down    volume down
+Ctrl + Alt + ...
+  *) Left    focus window on left
+  *) Right   focus window on right
 --]]
 
 ---------------------------------------------------------------------------------------------------
@@ -35,6 +41,7 @@ Cmd + Alt + ...
 local hyper = { "Ctrl", "Alt", "Cmd" }
 local move = { "Ctrl", "Cmd "}
 local music = { "Alt", "Cmd"}
+local hyperright = { "Ctrl", "Alt" }
 
 -- Screen identifiers
 local macScreen = "Color LCD"
@@ -65,6 +72,20 @@ function bindKey(mod, key, fn)
 end
 
 ---------------------------------------------------------------------------------------------------
+-- Spotify helpers
+---------------------------------------------------------------------------------------------------
+
+function skip30s()
+  local pos = hs.spotify.getPosition()
+  hs.spotify.setPosition(pos + 30)
+end
+
+function middleOfSong()
+  local dur = hs.spotify.getDuration()
+  hs.spotify.setPosition(dur/2)
+end
+
+---------------------------------------------------------------------------------------------------
 -- Display positions
 ---------------------------------------------------------------------------------------------------
 
@@ -80,7 +101,7 @@ positions = {
   right50 = hs.layout.right50,
   right65 = {x=0.35, y=0, w=0.65, h=1},
 
-  upper50 =        {x=0.00, y=0, w=1.00, h=0.5}, 
+  upper50 =        {x=0.00, y=0, w=1.00, h=0.5},
   upper50Left35 =  {x=0.00, y=0, w=0.35, h=0.5},
   upper50Left50 =  {x=0.00, y=0, w=0.50, h=0.5},
   upper50Left65 =  {x=0.00, y=0, w=0.65, h=0.5},
@@ -96,7 +117,8 @@ positions = {
   lower50Right50 = {x=0.50, y=0.5, w=0.50, h=0.5},
   lower50Right65 = {x=0.35, y=0.5, w=0.65, h=0.5},
 
-  chat = {x=0.7, y=0.6, w=0.3, h=0.4}
+  chat = {x=0.599, y=0.465, w=0.4, h=0.5},
+  altChat = {x=0, y=0.465, w=0.4, h=0.5}
 }
 
 ---------------------------------------------------------------------------------------------------
@@ -164,7 +186,7 @@ layoutChooser = hs.chooser.new(function(selection)
   if #hs.screen.allScreens() > 1 then
     arrangement = "multi"
   end
-  launchApps(arrangement, layouts[selection.index]) 
+  launchApps(arrangement, layouts[selection.index])
   applyLayout(layouts[selection.index])
 end)
 i = 0
@@ -193,9 +215,9 @@ end):start()
 
 grid = {
   {mod=hyper, key="Left", units={positions.left50, positions.left65, positions.left35}},
-  {mod=hyper, key=".", units={positions.maximized, positions.centred, positions.chat}},
+  {mod=hyper, key=".", units={positions.maximized, positions.centred, positions.chat, positions.altChat}},
   {mod=hyper, key="Right", units={positions.right50, positions.right65, positions.right35}},
-  {mod=hyper, key="Up", units={positions.upper50, positions.upper50Left50, positions.upper50Right50, 
+  {mod=hyper, key="Up", units={positions.upper50, positions.upper50Left50, positions.upper50Right50,
     positions.upper50Left35, positions.upper50Right35, positions.upper50Left65, positions.upper50Right65}},
   {mod=hyper, key="Down", units={positions.lower50, positions.lower50Left50, positions.lower50Right50,
     positions.lower50Left35, positions.lower50Right35, positions.lower50Left65, positions.lower50Right65}},
@@ -225,13 +247,14 @@ end)
 -- Custom bindings for screen locking, launching/focussing apps, and controlling Spotify
 ---------------------------------------------------------------------------------------------------
 
-bindKey(hyper, "c", function() hs.application.launchOrFocus("Google Chrome") end)
+bindKey(hyperright,"c", function() hs.application.launchOrFocus("Google Chrome") end)
 bindKey(hyper, "j", function() hs.application.launchOrFocus("IntelliJ IDEA") end)
+bindKey(hyperright, "f", function() hs.application.launchOrFocus("IntelliJ IDEA") end)
 bindKey(hyper, "k", function() hs.hints.windowHints() end)
 bindKey(hyper, "l", function() hs.caffeinate.startScreensaver() end)
-bindKey(hyper, "s", function() hs.application.launchOrFocus("Slack") end)
-bindKey(hyper, "t", function() hs.application.launchOrFocus("Sublime Text") end)
-bindKey(hyper, "ö", function() layoutChooser:show() end)
+bindKey(hyperright, "s", function() hs.application.launchOrFocus("Slack") end)
+bindKey(hyperright, "t", function() hs.application.launchOrFocus("Sublime Text") end)
+bindKey(hyper, ";", function() layoutChooser:show() end)
 
 switcher = hs.window.switcher.new(hs.window.filter.new():setCurrentSpace(true):setDefaultFilter{})
 bindKey("Alt", "Tab", function() switcher:next() end)
@@ -241,6 +264,9 @@ bindKey(move, "Right", function() hs.window.focusedWindow():moveOneScreenEast() 
 
 bindKey(music, "k", function() hs.spotify.displayCurrentTrack() end)
 bindKey(music, "p", function() hs.spotify.playpause() end)
+bindKey(music, "j", function() hs.spotify.ff() end)
+bindKey(music, "l", function() skip30s() end)
+bindKey(music, ";", function() middleOfSong() end)
 bindKey(music, "Left", function() hs.spotify.previous() end)
 bindKey(music, "Right", function() hs.spotify.next() end)
 bindKey(music, "Up", function() hs.spotify.volumeUp() end)
