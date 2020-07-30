@@ -2,7 +2,7 @@
 # Databaseline code repository
 #
 # Code for post: Shell Scripts to Check Data Integrity in Hive
-# Base URL:      https://databaseline.bitbucket.io
+# Base URL:      https://databaseline.tech
 # Author:        Ian Hellström
 # -----------------------------------------------------------------------------
 # Source Hadoop configurations and generic functions

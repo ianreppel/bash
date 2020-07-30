@@ -2,7 +2,7 @@
 # Databaseline code repository
 # 
 # Code for post: A Quickie on Collecting Table and Column Statistics in MemSQL
-# Base URL:      https://databaseline.bitbucket.io
+# Base URL:      https://databaseline.tech
 # Author:        Ian Hellström
 # -----------------------------------------------------------------------------
 # Source MemSQL configurations and table/column definitions

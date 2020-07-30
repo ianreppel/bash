@@ -2,7 +2,7 @@
 # Databaseline code repository
 # 
 # Code for post: Setting up Scala for Spark App Development
-# Base URL:      https://databaseline.bitbucket.io
+# Base URL:      https://databaseline.tech
 # Author:        Ian Hellström
 # -----------------------------------------------------------------------------
 # Variables
