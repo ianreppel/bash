@@ -1,8 +1,6 @@
 #!/bin/bash
-# Databaseline code repository
-# 
-# Code for post: A Quickie on Collecting Table and Column Statistics in MemSQL
-# Base URL:      https://databaseline.tech
+# Code for post: Collecting Table and Column Statistics in MemSQL
+# Base URL:      https://ianhellstrom.org
 # Author:        Ian Hellström
 # -----------------------------------------------------------------------------
 # Source MemSQL configurations and table/column definitions

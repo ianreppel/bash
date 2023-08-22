@@ -1,8 +1,6 @@
 #!/bin/bash
-# Databaseline code repository
-# 
 # Code for post: Setting up Scala for Spark App Development
-# Base URL:      https://databaseline.tech
+# Base URL:      https://ianhellstrom.org
 # Author:        Ian Hellström
 # -------------------------------------------------------------------------------------------------
 # Global definitions 
