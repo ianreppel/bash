@@ -1,7 +1,7 @@
 #!/bin/bash
 # Code for post: Collecting Table and Column Statistics in MemSQL
-# Base URL:      https://ianhellstrom.org
-# Author:        Ian Hellström
+# Base URL:      https://ianreppel.org
+# Author:        Ian Reppel
 # -----------------------------------------------------------------------------
 # Source MemSQL configurations and table/column definitions
 # -----------------------------------------------------------------------------

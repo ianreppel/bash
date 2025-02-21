@@ -1,7 +1,7 @@
 #!/bin/bash
 # Code for post: Setting up Scala for Spark App Development
-# Base URL:      https://ianhellstrom.org
-# Author:        Ian Hellström
+# Base URL:      https://ianreppel.org
+# Author:        Ian Reppel
 # -----------------------------------------------------------------------------
 # Variables
 # -----------------------------------------------------------------------------

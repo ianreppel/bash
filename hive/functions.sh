@@ -1,7 +1,7 @@
 #!/bin/bash
 # Code for post: Shell Scripts to Check Data Integrity in Hive
-# Base URL:      https://ianhellstrom.org
-# Author:        Ian Hellström
+# Base URL:      https://ianreppel.org
+# Author:        Ian Reppel
 # -----------------------------------------------------------------------------
 # Source Hadoop configurations and generic functions
 # -----------------------------------------------------------------------------
